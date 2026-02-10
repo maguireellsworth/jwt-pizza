@@ -1,12 +1,14 @@
-import { test, expect, Page } from '@playwright/test'
-import { User, Role } from '../src/service/pizzaService'
+import { test, expect, Page, Route } from '@playwright/test'
+import { User, Role, Store } from '../src/service/pizzaService'
 
 export async function basicInit(page: Page) {
   let loggedInUser: User | undefined;
-  const validUsers: Record<string, User> = { 'd@jwt.com': { id: '3', name: 'Kai Chen', email: 'd@jwt.com', password: 'a', roles: [{ role: Role.Diner }] } };
+  const validUsers: Record<string, User> = { 
+    'd@jwt.com': { id: '3', name: 'Kai Chen', email: 'd@jwt.com', password: 'a', roles: [{ role: Role.Diner }] },
+    'f@jwt.com': { id: '4', name: 'some name', email: 'f@jwt.com', password: 'franchisee', roles: [{role: Role.Franchisee}] }
+  };
 
-  // Authorize login for the given user
-  await page.route('*/**/api/auth', async (route) => {
+  async function authorize(route: Route){
     const loginReq = route.request().postDataJSON();
     const user = validUsers[loginReq.email];
     if (!user || user.password !== loginReq.password) {
@@ -20,7 +22,16 @@ export async function basicInit(page: Page) {
     };
     expect(route.request().method()).toBe('PUT');
     await route.fulfill({ json: loginRes });
+  }
+
+  // Authorize login for the given user
+  await page.route('*/**/api/auth', async (route) => {
+    await authorize(route);
   });
+
+  await page.route('**/api/auth', async (route) => {
+    await authorize(route);
+  })
 
   // Return the currently logged in user
   await page.route('*/**/api/user/me', async (route) => {
@@ -70,6 +81,21 @@ export async function basicInit(page: Page) {
     expect(route.request().method()).toBe('GET');
     await route.fulfill({ json: franchiseRes });
   });
+
+  // go to franchise page for id
+  await page.route('**/api/franchise/**', async (route) => {
+    const response = {
+        id: 3,
+        name: 'Fake Franchise',
+        admins: [loggedInUser],
+        stores: [{
+            id: 1,
+            name: 'fakeStore',
+            totalRevenue: 0.0678
+        }]
+    }
+    await route.fulfill({ json: [response]})
+  })
 
   // Order a pizza.
   await page.route('*/**/api/order', async (route) => {
