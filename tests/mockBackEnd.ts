@@ -82,5 +82,34 @@ export async function basicInit(page: Page) {
     await route.fulfill({ json: orderRes });
   });
 
+  // verify and order
+  await page.route('**/api/order/verify', async (route) => {
+    const message = 'valid';
+    const payload = {
+        "vendor": {
+            "id": "m3k4e",
+            "name": "Maguire"
+        },
+        "diner": {
+            "id": 3,
+            "name": "pizza franchisee",
+            "email": "f@jwt.com"
+        },
+        "order": {
+            "items": [
+            {
+                "menuId": 1,
+                "description": "Veggie",
+                "price": 0.0038
+            }
+            ],
+            "storeId": "1",
+            "franchiseId": 1,
+            "id": 9
+        }
+    }
+    await route.fulfill({ json: { payload: payload, message: message }});
+  })
+
   await page.goto('/');
 }
