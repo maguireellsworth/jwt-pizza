@@ -12,9 +12,20 @@ test('checks everything is correct on the homepage', async ({ page }) => {
   await expect(page.getByRole('link', { name: 'Register' })).toBeVisible();
 });
 
-test('register a new user', async () => {
-
+test('register a new user', async ({page}) => {
+  await basicInit(page);
+  
+  await page.goto('http://localhost:5173/');
+  await page.getByRole('link', { name: 'Register' }).click();
+  await page.getByRole('textbox', { name: 'Full name' }).fill('Full Name');
+  await page.getByRole('textbox', { name: 'Email address' }).click();
+  await page.getByRole('textbox', { name: 'Email address' }).fill('email@email.com');
+  await page.getByRole('textbox', { name: 'Password' }).click();
+  await page.getByRole('textbox', { name: 'Password' }).fill('password');
+  await page.getByRole('button', { name: 'Register' }).click();
+  // await expect(page.getByLabel('Global')).toContainText('FN');
 })
+
 
 test('order a pizza with a logged in user', async ({page}) => {
   await basicInit(page);
