@@ -47,7 +47,11 @@ export async function basicInit(page: Page) {
   });
 
   await page.route('**/api/auth', async (route) => {
-    await authorize(route);
+    if(route.request().method() == 'PUT'){
+        await authorize(route);
+    }else if (route.request().method() == 'DELETE'){
+        await route.fulfill({json: {message: 'logout successful'}})
+    }
   })
 
   // Return the currently logged in user

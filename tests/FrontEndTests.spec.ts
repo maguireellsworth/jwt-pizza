@@ -34,6 +34,19 @@ test("register a new user", async ({ page }) => {
   // await expect(page.getByLabel('Global')).toContainText('FN');
 });
 
+test('logout a user', async ({page}) => {
+  await basicInit(page);
+
+  await page.goto('http://localhost:5173/');
+  await page.getByRole('link', { name: 'Login' }).click();
+  await page.getByRole('textbox', { name: 'Email address' }).fill('d@jwt.com');
+  await page.getByRole('textbox', { name: 'Email address' }).press('Tab');
+  await page.getByRole('textbox', { name: 'Password' }).fill('a');
+  await page.getByRole('button', { name: 'Login' }).click();
+  await page.getByRole('link', { name: 'Logout' }).click();
+  await expect(page.locator('#navbar-dark')).toContainText('Register');
+})
+
 test("the about page", async ({ page }) => {
   await basicInit(page);
 
