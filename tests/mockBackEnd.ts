@@ -132,8 +132,6 @@ export async function basicInit(page: Page) {
     }else if(route.request().method() == 'GET'){
         await route.fulfill({ json: orderRes })
     }
-    // expect(route.request().method()).toBe('POST');
-    // await route.fulfill({ json: orderRes });
   });
 
   // verify and order
