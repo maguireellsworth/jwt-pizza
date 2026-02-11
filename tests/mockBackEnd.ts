@@ -127,8 +127,13 @@ export async function basicInit(page: Page) {
       order: { ...orderReq, id: 23 },
       jwt: 'eyJpYXQ',
     };
-    expect(route.request().method()).toBe('POST');
-    await route.fulfill({ json: orderRes });
+    if(route.request().method() == 'POST'){
+        await route.fulfill({ json: orderRes })
+    }else if(route.request().method() == 'GET'){
+        await route.fulfill({ json: orderRes })
+    }
+    // expect(route.request().method()).toBe('POST');
+    // await route.fulfill({ json: orderRes });
   });
 
   // verify and order

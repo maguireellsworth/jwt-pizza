@@ -27,6 +27,22 @@ test('register a new user', async ({page}) => {
 })
 
 
+test('check dinerDashboard', async ({page}) => {
+  await basicInit(page);
+
+  await page.goto('http://localhost:5173/');
+  await page.getByRole('link', { name: 'Login' }).click();
+  await page.getByRole('textbox', { name: 'Email address' }).fill('d@jwt.com');
+  await page.getByRole('textbox', { name: 'Email address' }).press('Tab');
+  await page.getByRole('textbox', { name: 'Password' }).fill('a');
+  await page.getByRole('button', { name: 'Login' }).click();
+  await page.getByRole('link', { name: 'KC' }).click();
+  await expect(page.getByRole('heading')).toContainText('Your pizza kitchen');
+  await expect(page.getByRole('main')).toContainText('Kai Chen');
+  await expect(page.getByRole('main')).toContainText('d@jwt.com');
+  await expect(page.getByRole('main')).toContainText('diner');
+})
+
 test('order a pizza with a logged in user', async ({page}) => {
   await basicInit(page);
 
