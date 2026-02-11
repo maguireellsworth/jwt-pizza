@@ -9,6 +9,22 @@ export async function basicInit(page: Page) {
     'a@jwt.com': { id: '5', name: 'some name', email: 'a@jwt.com', password: 'admin', roles: [{role: Role.Admin}] }
   };
 
+  const stores = [];
+
+  const franchises = [
+        {
+          id: 2,
+          name: 'LotaPizza',
+          stores: [
+            { id: 4, name: 'Lehi' },
+            { id: 5, name: 'Springville' },
+            { id: 6, name: 'American Fork' },
+          ],
+        },
+        { id: 3, name: 'PizzaCorp', stores: [{ id: 7, name: 'Spanish Fork' }] },
+        { id: 4, name: 'topSpot', stores: [] },
+      ];
+
   async function authorize(route: Route){
     const loginReq = route.request().postDataJSON();
     const user = validUsers[loginReq.email];
@@ -65,22 +81,16 @@ export async function basicInit(page: Page) {
   // Standard franchises and stores
   await page.route(/\/api\/franchise(\?.*)?$/, async (route) => {
     const franchiseRes = {
-      franchises: [
-        {
-          id: 2,
-          name: 'LotaPizza',
-          stores: [
-            { id: 4, name: 'Lehi' },
-            { id: 5, name: 'Springville' },
-            { id: 6, name: 'American Fork' },
-          ],
-        },
-        { id: 3, name: 'PizzaCorp', stores: [{ id: 7, name: 'Spanish Fork' }] },
-        { id: 4, name: 'topSpot', stores: [] },
-      ],
+      franchises: franchises
     };
-    expect(route.request().method()).toBe('GET');
-    await route.fulfill({ json: franchiseRes });
+    // expect(route.request().method()).toBe('GET');
+    if(route.request().method() == 'GET'){
+        await route.fulfill({ json: franchiseRes });
+    } else if(route.request().method() == 'POST'){
+        const createReq = route.request().postDataJSON();
+        franchises.push({ id: 5, name: createReq.name, stores: []})
+        await route.fulfill({ json: {stores: [], id: 1, name: createReq.name, admins: []}})
+    }
   });
 
   // create a store
