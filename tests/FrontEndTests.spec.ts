@@ -26,6 +26,21 @@ test('register a new user', async ({page}) => {
   // await expect(page.getByLabel('Global')).toContainText('FN');
 })
 
+test('the about page', async ({page}) => {
+  await basicInit(page);
+
+  await page.goto('http://localhost:5173/');
+  await page.getByRole('link', { name: 'About' }).click();
+  await expect(page.getByRole('main')).toContainText('The secret sauce');
+})
+
+test('the history page', async ({page}) => {
+  await basicInit(page);
+
+  await page.goto('http://localhost:5173/');
+  await page.getByRole('link', { name: 'History' }).click();
+  await expect(page.getByRole('heading')).toContainText('Mama Rucci, my my');
+})
 
 test('check dinerDashboard', async ({page}) => {
   await basicInit(page);
