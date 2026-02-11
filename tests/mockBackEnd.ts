@@ -5,7 +5,8 @@ export async function basicInit(page: Page) {
   let loggedInUser: User | undefined;
   const validUsers: Record<string, User> = { 
     'd@jwt.com': { id: '3', name: 'Kai Chen', email: 'd@jwt.com', password: 'a', roles: [{ role: Role.Diner }] },
-    'f@jwt.com': { id: '4', name: 'some name', email: 'f@jwt.com', password: 'franchisee', roles: [{role: Role.Franchisee}] }
+    'f@jwt.com': { id: '4', name: 'some name', email: 'f@jwt.com', password: 'franchisee', roles: [{role: Role.Franchisee}] },
+    'a@jwt.com': { id: '5', name: 'some name', email: 'a@jwt.com', password: 'admin', roles: [{role: Role.Admin}] }
   };
 
   async function authorize(route: Route){
@@ -82,6 +83,18 @@ export async function basicInit(page: Page) {
     await route.fulfill({ json: franchiseRes });
   });
 
+  // create a store
+  await page.route(/\/api\/franchise\/\d+\/store(\?.*)?$/, async (route) => {
+    const loginReq = route.request().postDataJSON();
+    const response = {
+        id: 1,
+        franchiseId: 1,
+        name: loginReq.name
+    }
+    await route.fulfill({ json: response})
+});
+
+
   // go to franchise page for id
   await page.route('**/api/franchise/**', async (route) => {
     const response = {
@@ -90,7 +103,7 @@ export async function basicInit(page: Page) {
         admins: [loggedInUser],
         stores: [{
             id: 1,
-            name: 'fakeStore',
+            name: 'FakeStore',
             totalRevenue: 0.0678
         }]
     }
