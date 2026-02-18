@@ -41,18 +41,74 @@ export async function basicInit(page: Page) {
     await route.fulfill({ json: loginRes });
   }
 
-  // Authorize login for the given user
-  await page.route('*/**/api/auth', async (route) => {
-    await authorize(route);
-  });
+  let nextId = 4;
 
   await page.route('**/api/auth', async (route) => {
-    if(route.request().method() == 'PUT'){
-        await authorize(route);
-    }else if (route.request().method() == 'DELETE'){
-        await route.fulfill({json: {message: 'logout successful'}})
+    const method = route.request().method();
+    const body = route.request().postDataJSON() ?? {};
+
+    // REGISTER
+    if (method === 'POST') {
+      const email = body.email;
+      const password = body.password;
+      const name = body.name ?? body.fullName;
+
+      if (!email || !password || !name) {
+        await route.fulfill({ status: 400 });
+        return;
+      }
+
+      if (validUsers[email]) {
+        await route.fulfill({ status: 409 });
+        return;
+      }
+
+      nextId++;
+      const user: User = {
+        id: nextId.toString(),
+        name,
+        email,
+        roles: [{ role: Role.Diner }],
+      };
+
+      validUsers[email] = { ...user, password };
+      loggedInUser = user;
+    const registerResp = {
+      user: loggedInUser,
+      token: 'abcdef',
+    };
+      await route.fulfill({ json: registerResp });
+      return;
     }
-  })
+     // LOGIN
+    if (method === 'PUT') {
+      const email = body.email;
+      const password = body.password;
+
+      const user = validUsers[email];
+      if (!user || user.password !== password) {
+        await route.fulfill({ status: 401 });
+        return;
+      }
+
+      loggedInUser = user;
+      const loginRes = {
+        user: loggedInUser,
+        token: 'abcdef',
+      };
+      await route.fulfill({ json: loginRes });
+      return;
+    }
+
+      // LOGOUT
+    if (method === 'DELETE') {
+      loggedInUser = undefined;
+      await route.fulfill({ json: {message: 'logout successful'}});
+      return;
+    }
+
+    await route.continue();
+  });
 
   // Return the currently logged in user
   await page.route('*/**/api/user/me', async (route) => {
