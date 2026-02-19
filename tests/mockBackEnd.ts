@@ -25,23 +25,7 @@ export async function basicInit(page: Page) {
         { id: 4, name: 'topSpot', stores: [] },
       ];
 
-  async function authorize(route: Route){
-    const loginReq = route.request().postDataJSON();
-    const user = validUsers[loginReq.email];
-    if (!user || user.password !== loginReq.password) {
-      await route.fulfill({ status: 401, json: { error: 'Unauthorized' } });
-      return;
-    }
-    loggedInUser = validUsers[loginReq.email];
-    const loginRes = {
-      user: loggedInUser,
-      token: 'abcdef',
-    };
-    expect(route.request().method()).toBe('PUT');
-    await route.fulfill({ json: loginRes });
-  }
-
-  let nextId = 4;
+  let nextId = 6;
 
   await page.route('**/api/auth', async (route) => {
     const method = route.request().method();
@@ -115,6 +99,44 @@ export async function basicInit(page: Page) {
     expect(route.request().method()).toBe('GET');
     await route.fulfill({ json: loggedInUser });
   });
+
+  // Update an existing user
+  await page.route('*/**/api/user/*', async (route) => {
+    const method = route.request().method();
+    const body = route.request().postDataJSON() ?? {};
+    const url = new URL(route.request().url());
+    let userId: Number | String = Number(url.pathname.split('/').pop());
+    userId = userId.toString();
+
+    if(method == 'PUT'){
+      const existingEntry = Object.entries(validUsers).find(
+        ([_, user]) => user.id === userId
+      );
+      if(!existingEntry){
+        await route.fulfill({status: 404});
+        return;
+      }
+
+      const [oldEmail, existingUser] = existingEntry;
+      if(body.email && body.email !== oldEmail){
+        delete validUsers[oldEmail];
+      }
+      const updatedUser = {
+        ...existingUser,
+        ...body,
+        id: existingUser.id,
+      }
+      validUsers[updatedUser.email] = updatedUser;
+
+
+      loggedInUser = {...updatedUser};
+      delete loggedInUser!.password;
+      await route.fulfill({ json: {
+        email: updatedUser.email,
+        roles:[updatedUser.roles[0]]
+      }})
+    }
+  })
 
   // A standard menu
   await page.route('*/**/api/order/menu', async (route) => {
