@@ -156,7 +156,7 @@ test("create a franchise as an admin", async ({ page }) => {
   // await page.getByRole('button', { name: 'Close' }).click();
 });
 
-test('updateUser', async ({ page }) => {
+test('updateUser username', async ({ page }) => {
   await basicInit(page);
 
   const email = `user${Math.floor(Math.random() * 10000)}@jwt.com`;
@@ -196,3 +196,36 @@ test('updateUser', async ({ page }) => {
 
   await expect(page.getByRole('main')).toContainText('pizza dinerx');
 });
+
+test('update user email', async ({page}) => {
+  await basicInit(page);
+
+  const email = `user${Math.floor(Math.random() * 10000)}@jwt.com`;
+  await page.goto('/');
+  await page.getByRole('link', { name: 'Register' }).click();
+  await page.getByRole('textbox', { name: 'Full name' }).fill('pizza diner');
+  await page.getByRole('textbox', { name: 'Email address' }).fill(email);
+  await page.getByRole('textbox', { name: 'Password' }).fill('diner');
+  await page.getByRole('button', { name: 'Register' }).click();
+
+  await page.getByRole('link', { name: 'pd' }).click();
+
+  await expect(page.getByRole('main')).toContainText('pizza diner');
+  await page.getByRole('button', { name: 'Edit' }).click();
+  await expect(page.locator('h3')).toContainText('Edit user');
+  await page.locator('input[type="email"]').click();
+  await page.locator('input[type="email"]').fill('newemail@email.com');
+  await page.getByRole('button', { name: 'Update' }).click();
+  await expect(page.getByRole('main')).toContainText('newemail@email.com');
+
+  await page.getByRole('link', { name: 'Logout' }).click();
+  
+  await page.getByRole('link', { name: 'Login' }).click();
+  await page.getByRole('textbox', { name: 'Email address' }).fill('newemail@email.com');
+  await page.getByRole('textbox', { name: 'Password' }).fill('diner');
+  await page.getByRole('button', { name: 'Login' }).click();
+
+  await page.getByRole('link', { name: 'pd' }).click();
+
+  await expect(page.getByRole('main')).toContainText('newemail@email.com');
+})
