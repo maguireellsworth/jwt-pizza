@@ -262,7 +262,7 @@ test('update user password', async ({page}) => {
   ).toBeVisible();
 })
 
-test('get a list of users as admin', async ({page}) => {
+test('get pageinated list of users as admin', async ({page}) => {
   await basicInit(page);
 
   await page.goto("http://localhost:5173/");
@@ -276,7 +276,12 @@ test('get a list of users as admin', async ({page}) => {
   await expect(page.getByRole('main')).toContainText('Username');
   
   await expect(page.getByRole('main')).toContainText('Alice Johnson');
+  await expect(page.getByRole("button", {name: "«"}).first()).toBeDisabled();
   await page.getByRole("button", {name: "»"}).first().click();
 
   await expect(page.getByRole('main')).toContainText('Kevin Anderson');
+  await page.getByRole("button", {name: "»"}).first().click();
+  await expect(page.getByRole('main')).toContainText('Ulysses Hall');
+
+  await expect(page.getByRole("button", {name: "»"}).first()).toBeDisabled();
 })
