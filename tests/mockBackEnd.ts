@@ -8,6 +8,34 @@ export async function basicInit(page: Page) {
     'f@jwt.com': { id: '4', name: 'some name', email: 'f@jwt.com', password: 'franchisee', roles: [{role: Role.Franchisee}] },
     'a@jwt.com': { id: '5', name: 'some name', email: 'a@jwt.com', password: 'admin', roles: [{role: Role.Admin}] }
   };
+  const mockUsers = [
+    { id: 1,  name: 'Alice Johnson',    email: 'alice@jwt.com',    roles: [{ role: 'diner' }] },
+    { id: 2,  name: 'Bob Smith',        email: 'bob@jwt.com',      roles: [{ role: 'diner' }] },
+    { id: 3,  name: 'Charlie Brown',    email: 'charlie@jwt.com',  roles: [{ role: 'chef' }] },
+    { id: 4,  name: 'Dana White',       email: 'dana@jwt.com',     roles: [{ role: 'admin' }] },
+    { id: 5,  name: 'Ethan Clark',      email: 'ethan@jwt.com',    roles: [{ role: 'diner' }] },
+    { id: 6,  name: 'Fiona Davis',      email: 'fiona@jwt.com',    roles: [{ role: 'diner' }] },
+    { id: 7,  name: 'George Miller',    email: 'george@jwt.com',   roles: [{ role: 'chef' }] },
+    { id: 8,  name: 'Hannah Lee',       email: 'hannah@jwt.com',   roles: [{ role: 'diner' }] },
+    { id: 9,  name: 'Ian Thompson',     email: 'ian@jwt.com',      roles: [{ role: 'diner' }] },
+    { id: 10, name: 'Julia Martinez',   email: 'julia@jwt.com',    roles: [{ role: 'admin' }] },
+    { id: 11, name: 'Kevin Anderson',   email: 'kevin@jwt.com',    roles: [{ role: 'diner' }] },
+    { id: 12, name: 'Laura Garcia',     email: 'laura@jwt.com',    roles: [{ role: 'chef' }] },
+    { id: 13, name: 'Michael Wilson',   email: 'michael@jwt.com',  roles: [{ role: 'diner' }] },
+    { id: 14, name: 'Nina Rodriguez',   email: 'nina@jwt.com',     roles: [{ role: 'diner' }] },
+    { id: 15, name: 'Oliver Martinez',  email: 'oliver@jwt.com',   roles: [{ role: 'admin' }] },
+    { id: 16, name: 'Paula Hernandez',  email: 'paula@jwt.com',    roles: [{ role: 'diner' }] },
+    { id: 17, name: 'Quentin Scott',    email: 'quentin@jwt.com',  roles: [{ role: 'chef' }] },
+    { id: 18, name: 'Rachel Young',     email: 'rachel@jwt.com',   roles: [{ role: 'diner' }] },
+    { id: 19, name: 'Samuel King',      email: 'samuel@jwt.com',   roles: [{ role: 'diner' }] },
+    { id: 20, name: 'Tina Wright',      email: 'tina@jwt.com',     roles: [{ role: 'admin' }] },
+    { id: 21, name: 'Ulysses Hall',     email: 'ulysses@jwt.com',  roles: [{ role: 'diner' }] },
+    { id: 22, name: 'Victoria Allen',   email: 'victoria@jwt.com', roles: [{ role: 'chef' }] },
+    { id: 23, name: 'William Green',    email: 'william@jwt.com',  roles: [{ role: 'diner' }] },
+    { id: 24, name: 'Xavier Adams',     email: 'xavier@jwt.com',   roles: [{ role: 'diner' }] },
+    { id: 25, name: 'Yasmine Baker',    email: 'yasmine@jwt.com',  roles: [{ role: 'admin' }] },
+  ];
+
 
   const stores = [];
 
@@ -101,7 +129,7 @@ export async function basicInit(page: Page) {
   });
 
   // Update an existing user
-  await page.route('*/**/api/user/*', async (route) => {
+  await page.route(/\/api\/user\/\d+$/, async (route) => {
     const method = route.request().method();
     const body = route.request().postDataJSON() ?? {};
     const url = new URL(route.request().url());
@@ -137,6 +165,42 @@ export async function basicInit(page: Page) {
       }})
     }
   })
+
+  // GET /api/user?page=1&limit=10&name=*
+await page.route(/\/api\/user(\?.*)?$/, async (route) => {
+  if (route.request().method() !== 'GET') {
+    await route.continue();
+    return;
+  }
+
+  const url = new URL(route.request().url());
+
+  const page = Number(url.searchParams.get('page') ?? 1);
+  const limit = Number(url.searchParams.get('limit') ?? 10);
+  const nameFilter = url.searchParams.get('name') ?? '*';
+
+  let filtered = mockUsers;
+
+  if (nameFilter !== '*' && nameFilter.trim() !== '') {
+    const normalized = nameFilter.toLowerCase();
+    filtered = mockUsers.filter((u) =>
+      u.name.toLowerCase().includes(normalized)
+    );
+  }
+
+  const start = (page) * limit;
+  const end = start + limit;
+
+  await route.fulfill({
+    status: 200,
+    contentType: 'application/json',
+    body: JSON.stringify({
+      users: filtered.slice(start, end),
+      more: end < filtered.length,
+    }),
+  });
+});
+
 
   // A standard menu
   await page.route('*/**/api/order/menu', async (route) => {
