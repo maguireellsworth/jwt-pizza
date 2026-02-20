@@ -150,7 +150,7 @@ test("create a franchise as an admin", async ({ page }) => {
     .getByRole("textbox", { name: "franchisee admin email" })
     .fill("f@jwt.com");
   await page.getByRole("button", { name: "Create" }).click();
-  await expect(page.getByRole("table")).toContainText("asdf");
+  await expect(page.getByRole('main')).toContainText('asdf');
   // await page.getByRole('row', { name: 'asdf pizza franchisee Close' }).getByRole('button').click();
   // await expect(page.getByRole('heading')).toContainText('Sorry to see you go');
   // await page.getByRole('button', { name: 'Close' }).click();
