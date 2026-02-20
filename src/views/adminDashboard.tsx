@@ -44,6 +44,86 @@ export default function AdminDashboard(props: Props) {
     response = (
       <View title="Mama Ricci's kitchen">
         <div className="text-start py-8 px-4 sm:px-6 lg:px-8">
+           <h3 className="text-neutral-100 text-xl mt-10">Users</h3>
+            <div className="bg-neutral-100 overflow-clip my-4">
+              <div className="flex flex-col">
+                <div className="-m-1.5 overflow-x-auto">
+                  <div className="p-1.5 min-w-full inline-block align-middle">
+                    <div className="overflow-hidden">
+                      <table className="min-w-full divide-y divide-gray-200">
+                        <thead className="uppercase text-neutral-100 bg-slate-400 border-b-2 border-gray-500">
+                          <tr>
+                            {['Username', 'Email', 'Role'].map((header) => (
+                              <th key={header} scope="col" className="px-6 py-3 text-center text-xs font-medium">
+                                {header}
+                              </th>
+                            ))}
+                          </tr>
+                        </thead>
+
+                        {/* layout-only rows (replace later with real map) */}
+                        <tbody className="divide-y divide-gray-200">
+                          {[0, 1, 2, 3, 4].map((i) => (
+                            <tr key={i} className="bg-neutral-100">
+                              <td className="text-start px-2 whitespace-nowrap text-sm font-normal text-gray-800">
+                                username{i + 1}
+                              </td>
+                              <td className="text-start px-2 whitespace-nowrap text-sm font-normal text-gray-800">
+                                user{i + 1}@jwt.com
+                              </td>
+                              <td className="text-start px-2 whitespace-nowrap text-sm font-normal text-gray-800">
+                                diner
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+
+                        <tfoot>
+                          <tr>
+                            <td className="px-1 py-2" colSpan={2}>
+                              <input
+                                type="text"
+                                // ref={filterUsersRef}  // hook up later
+                                name="filterUsers"
+                                placeholder="Search users"
+                                className="px-2 py-1 text-sm border border-gray-300 rounded-lg w-56"
+                              />
+                              <button
+                                type="submit"
+                                className="ml-2 px-2 py-1 text-sm font-semibold rounded-lg border border-orange-400 text-orange-400 hover:border-orange-800 hover:text-orange-800"
+                                // onClick={filterUsers} // hook up later
+                              >
+                                Submit
+                              </button>
+                            </td>
+
+                            <td className="text-end text-sm font-medium">
+                              <button
+                                className="w-12 p-1 text-sm font-semibold rounded-lg border border-transparent bg-white text-grey border-grey m-1 hover:bg-orange-200 disabled:bg-neutral-300"
+                                // onClick={() => setUsersPage(usersPage - 1)}
+                                // disabled={usersPage <= 0}
+                                disabled
+                              >
+                                «
+                              </button>
+                              <button
+                                className="w-12 p-1 text-sm font-semibold rounded-lg border border-transparent bg-white text-grey border-grey m-1 hover:bg-orange-200 disabled:bg-neutral-300"
+                                // onClick={() => setUsersPage(usersPage + 1)}
+                                // disabled={!usersList.more}
+                                disabled
+                              >
+                                »
+                              </button>
+                            </td>
+                          </tr>
+                        </tfoot>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+               
           <h3 className="text-neutral-100 text-xl">Franchises</h3>
           <div className="bg-neutral-100 overflow-clip my-4">
             <div className="flex flex-col">
