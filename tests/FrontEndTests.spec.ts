@@ -274,6 +274,7 @@ test('get a list of users as admin', async ({page}) => {
   await page.getByRole("link", { name: "Admin" }).click();
   await expect(page.getByRole('main')).toContainText('Users');
   await expect(page.getByRole('main')).toContainText('Username');
+  
   await expect(page.getByRole('main')).toContainText('Alice Johnson');
   await page.getByRole("button", {name: "»"}).first().click();
 

@@ -26,7 +26,7 @@ export default function AdminDashboard(props: Props) {
       setFranchiseList(await pizzaService.getFranchises(franchisePage, 3, '*'));
       setUserList(await pizzaService.getUsers(userPage, 10, '*'))
     })();
-  }, [props.user, franchisePage]);
+  }, [props.user, franchisePage, userPage]);
 
   function createFranchise() {
     navigate('/admin-dashboard/create-franchise');
