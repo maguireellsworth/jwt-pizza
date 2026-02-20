@@ -21,6 +21,8 @@ export default function AdminDashboard(props: Props) {
 
   const filterFranchiseRef = React.useRef<HTMLInputElement>(null);
 
+  const filterUserRef = React.useRef<HTMLInputElement>(null);
+
   React.useEffect(() => {
     (async () => {
       setFranchiseList(await pizzaService.getFranchises(franchisePage, 3, '*'));
@@ -42,6 +44,10 @@ export default function AdminDashboard(props: Props) {
 
   async function filterFranchises() {
     setFranchiseList(await pizzaService.getFranchises(franchisePage, 10, `*${filterFranchiseRef.current?.value}*`));
+  }
+
+  async function filterUsers() {
+    setUserList(await pizzaService.getUsers(userPage, 10, `*${filterUserRef.current?.value}*`));
   }
 
   let response = <NotFound />;
@@ -91,6 +97,7 @@ export default function AdminDashboard(props: Props) {
                           <td className="px-1 py-2" colSpan={2}>
                             <input
                               type="text"
+                              ref={filterUserRef}
                               name="filterUsers"
                               placeholder="Search users"
                               className="px-2 py-1 text-sm border border-gray-300 rounded-lg w-56"
@@ -98,6 +105,7 @@ export default function AdminDashboard(props: Props) {
                             <button
                               type="submit"
                               className="ml-2 px-2 py-1 text-sm font-semibold rounded-lg border border-orange-400 text-orange-400 hover:border-orange-800 hover:text-orange-800"
+                              onClick={filterUsers}
                             >
                               Submit
                             </button>
