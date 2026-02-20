@@ -296,9 +296,12 @@ test('get filterd list of users as admin', async ({page}) => {
   await page.getByRole("link", { name: "Admin" }).click();
   await expect(page.getByRole('main')).toContainText('Users');
   await expect(page.getByRole('main')).toContainText('Username');
+  await expect(page.getByRole('main')).toContainText('Alice Johnson');
+  await expect(page.getByRole('main')).toContainText('Bob Smith');
 
-  await page.getByRole('textbox', { name: 'Search users' }).click();
-  await page.getByRole('textbox', { name: 'Search users' }).fill('alice');
-  
+
+  await page.getByRole('textbox', { name: 'Search users' }).fill('Alice Smith');
+  await page.getByRole('cell', { name: 'Alice Smith Submit' }).getByRole('button').click();
+  await expect(page.getByRole('main')).toContainText('Alice Smith'); 
   await expect(page.getByRole('main')).not.toContainText('Bob Smith');
 })
