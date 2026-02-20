@@ -71,8 +71,8 @@ export default function AdminDashboard(props: Props) {
                       </thead>
 
                       <tbody className="divide-y divide-gray-200">
-                        {userList.users.map((user, index) => (
-                          <tr key={index} className="bg-neutral-100">
+                          {(userList?.users ?? []).map((user, index) => (
+                            <tr key={index} className="bg-neutral-100">
                             <td className="text-start px-2 whitespace-nowrap text-sm font-normal text-gray-800">
                               {user.name}
                             </td>

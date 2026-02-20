@@ -263,6 +263,8 @@ test('update user password', async ({page}) => {
 })
 
 test('get a list of users as admin', async ({page}) => {
+  await basicInit(page);
+
   await page.goto("http://localhost:5173/");
   await page.getByRole("link", { name: "Login" }).click();
   await page.getByRole("textbox", { name: "Email address" }).fill("a@jwt.com");
@@ -272,4 +274,8 @@ test('get a list of users as admin', async ({page}) => {
   await page.getByRole("link", { name: "Admin" }).click();
   await expect(page.getByRole('main')).toContainText('Users');
   await expect(page.getByRole('main')).toContainText('Username');
+  await expect(page.getByRole('main')).toContainText('Alice Johnson');
+  await page.getByRole("button", {name: "»"}).first().click();
+
+  await expect(page.getByRole('main')).toContainText('Kevin Anderson');
 })
