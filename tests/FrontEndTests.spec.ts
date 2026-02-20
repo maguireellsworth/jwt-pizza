@@ -300,8 +300,8 @@ test('get filterd list of users as admin', async ({page}) => {
   await expect(page.getByRole('main')).toContainText('Bob Smith');
 
 
-  await page.getByRole('textbox', { name: 'Search users' }).fill('Alice Smith');
-  await page.getByRole('cell', { name: 'Alice Smith Submit' }).getByRole('button').click();
-  await expect(page.getByRole('main')).toContainText('Alice Smith'); 
+  await page.getByRole('textbox', { name: 'Search users' }).fill('alice');
+  await page.getByRole('cell', { name: 'alice Submit' }).getByRole('button').click();
+  await expect(page.getByRole('cell', { name: 'Alice Johnson' })).toContainText('Alice Johnson'); 
   await expect(page.getByRole('main')).not.toContainText('Bob Smith');
 })

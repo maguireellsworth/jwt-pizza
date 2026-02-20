@@ -182,7 +182,7 @@ await page.route(/\/api\/user(\?.*)?$/, async (route) => {
   let filtered = mockUsers;
 
   if (nameFilter !== '*' && nameFilter.trim() !== '') {
-    const normalized = nameFilter.toLowerCase();
+    const normalized = nameFilter.replace(/^\*+|\*+$/g, '').toLowerCase();
     filtered = mockUsers.filter((u) =>
       u.name.toLowerCase().includes(normalized)
     );
