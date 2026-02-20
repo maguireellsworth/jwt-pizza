@@ -268,7 +268,6 @@ test('get pageinated list of users as admin', async ({page}) => {
   await page.goto("http://localhost:5173/");
   await page.getByRole("link", { name: "Login" }).click();
   await page.getByRole("textbox", { name: "Email address" }).fill("a@jwt.com");
-  await page.getByRole("textbox", { name: "Email address" }).press("Tab");
   await page.getByRole("textbox", { name: "Password" }).fill("admin");
   await page.getByRole("button", { name: "Login" }).click();
   await page.getByRole("link", { name: "Admin" }).click();
@@ -284,4 +283,22 @@ test('get pageinated list of users as admin', async ({page}) => {
   await expect(page.getByRole('main')).toContainText('Ulysses Hall');
 
   await expect(page.getByRole("button", {name: "»"}).first()).toBeDisabled();
+})
+
+test('get filterd list of users as admin', async ({page}) => {
+  await basicInit(page);
+
+  await page.goto("http://localhost:5173/");
+  await page.getByRole("link", { name: "Login" }).click();
+  await page.getByRole("textbox", { name: "Email address" }).fill("a@jwt.com");
+  await page.getByRole("textbox", { name: "Password" }).fill("admin");
+  await page.getByRole("button", { name: "Login" }).click();
+  await page.getByRole("link", { name: "Admin" }).click();
+  await expect(page.getByRole('main')).toContainText('Users');
+  await expect(page.getByRole('main')).toContainText('Username');
+
+  await page.getByRole('textbox', { name: 'Search users' }).click();
+  await page.getByRole('textbox', { name: 'Search users' }).fill('alice');
+  
+  await expect(page.getByRole('main')).not.toContainText('Bob Smith');
 })
